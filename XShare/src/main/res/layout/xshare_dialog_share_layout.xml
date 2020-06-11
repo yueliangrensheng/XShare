@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/xshare_color_bg"
+    android:orientation="vertical">
+
+    <GridView
+        android:id="@+id/xshare_dialog_share_gridview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:id="@+id/xshare_item_divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:background="@color/xshare_color_divider"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/xshare_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/xshare_color_cancel_bg"
+        android:gravity="center"
+        android:text="取消"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+</LinearLayout>

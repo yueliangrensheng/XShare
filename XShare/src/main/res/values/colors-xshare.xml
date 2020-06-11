@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="xshare_white_0_7">#B3FFFFFF</color>
+    <color name="xshare_color_divider">#4DFFFFFF</color>
+    <color name="xshare_color_bg">#221E1E</color>
+    <color name="xshare_color_cancel_bg">#302E2E</color>
+</resources>

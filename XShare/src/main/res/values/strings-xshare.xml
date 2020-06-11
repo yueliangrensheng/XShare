@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="xshare_settings">设置</string>
+    <string name="xshare_cancel">取消</string>
+    <string name="xshare_error_get_share">分享内容获取失败，请稍后重试</string>
+    <string name="xshare_no_wx_info">您还没有安装微信，请先安装微信客户端</string>
+    <string name="xshare_no_qq_info">您还没有安装QQ，请先安装QQ客户端</string>
+    <string name="xshare_permission_write_info">需要访问\"外部存储器\",否则会影响正常功能, 请到 \"应用信息 -> 权限\" 中设置!</string>
+    <string name="xshare_video_download_begin">视频开始下载</string>
+    <string name="xshare_video_downloading">视频正在下载</string>
+    <string name="xshare_permission_no_write">未授予存储文件权限</string>
+    <string name="xshare_video_path_empty">请检查视频下载地址是否正确</string>
+    <string name="xshare_video_download_success">视频已保存到相册</string>
+    <string name="xshare_video_download_failed">视频下载失败，请重新下载</string>
+</resources>
