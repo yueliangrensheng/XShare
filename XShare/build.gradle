@@ -1,5 +1,22 @@
 apply plugin: 'com.android.library'
 
+
+//---------------------------------- jCenter begin -------------------------------
+apply plugin: 'com.novoda.bintray-release'
+
+//jCenter 新添加
+publish {
+    userOrg = 'moonlife' //在https://bintray.com上注册的用户名
+    groupId = 'com.yazao.xshare' //jCenter上的路径
+    artifactId = 'xshare' //项目名称 --- 必须和 bintray上的创建的Name一致
+    publishVersion = '1.0.0' //library的版本号
+    desc = 'a share component for Android' //library的简单描述
+    website = 'https://github.com/yueliangrensheng/XShare' //library的开源地址，例如在github上的地址
+}
+
+//---------------------------------- jCenter end -------------------------------
+
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
