@@ -64,4 +64,24 @@ public class SimpleShareDialogClickListenerImpl implements OnShareDialogClickLis
     public void onDialogDownloadPicClick() {
 
     }
+
+    @Override
+    public void onDialogMiniClick(int session) {
+
+    }
+
+    @Override
+    public void onDialogDelClick() {
+
+    }
+
+    @Override
+    public void onDialogSetPermissionClick() {
+
+    }
+
+    @Override
+    public void onDialogNoInterestClick() {
+
+    }
 }

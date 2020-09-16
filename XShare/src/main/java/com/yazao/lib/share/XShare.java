@@ -46,9 +46,9 @@ import java.lang.ref.WeakReference;
 public class XShare {
 
     private WeakReference<Context> reference;
-    private Context mContext;
     private ShareDialog shareDialog;
     private OnShareDialogClickListener listener;
+    private int columnNum;
 
 
     //******************************** 例模式 ********************************
@@ -68,21 +68,22 @@ public class XShare {
     public XShare init(Context context) {
         destroy();
         reference = new WeakReference<>(context);
-        mContext = context;
-        //toast init
-        XToast.init(mContext);
-        //wx init
-        WxUtils.regToWx(mContext);
         return this;
     }
 
     public Context getContext() {
-        return mContext;
+        return (reference != null && reference.get() != null) ? reference.get() : null;
     }
 
     //******************************** 监听事件 ********************************
     public XShare setListener(OnShareDialogClickListener listener) {
         this.listener = listener;
+        return this;
+    }
+
+    //******************************** 布局UI元素列数 ********************************
+    public XShare setColumnNum(int columnNum) {
+        this.columnNum = columnNum;
         return this;
     }
 
@@ -141,12 +142,13 @@ public class XShare {
             shareDialog = null;
         }
 
-        shareDialog = new ShareDialog.Builder(mContext)
+        shareDialog = new ShareDialog.Builder(getContext())
                 .setLayoutId(R.layout.xshare_dialog_share_layout)
                 .setGravity(Gravity.BOTTOM)
                 .setCancelOnTouchOutside(true)
                 .setData(shareBean)
                 .setClickListener(listener)
+                .setColumnNum(columnNum)
                 .build();
     }
 
@@ -164,12 +166,6 @@ public class XShare {
 
         if (!shareDialog.isShowing()) {
             shareDialog.show();
-            shareDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    destroy();
-                }
-            });
         }
 
     }
@@ -184,6 +180,10 @@ public class XShare {
         if (reference != null) {
             reference.clear();
             reference = null;
+        }
+
+        if (listener != null){
+            listener = null;
         }
     }
 }

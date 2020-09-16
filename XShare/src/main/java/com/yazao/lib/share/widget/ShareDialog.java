@@ -33,6 +33,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.yazao.lib.share.listener.OnShareDialogClickListener.STATE_NO_ACTION;
+
 public class ShareDialog extends Dialog implements View.OnClickListener, AdapterView.OnItemClickListener {
 
     private int layoutId = R.layout.xshare_dialog_share_layout;
@@ -43,7 +45,7 @@ public class ShareDialog extends Dialog implements View.OnClickListener, Adapter
     private Activity activity;
     private GridView mRootLayout;
     private ListAdapter adapter;
-    private int columnWidth = 4;//一行几个元素
+    private int columnNum = 4;//一行几个元素
     private List<XShareItemBean> data = new ArrayList<>();
 
     public ShareDialog(@NonNull Context context, int layoutId, int gravity, boolean isCancelOnTouchOutside, OnShareDialogClickListener listener) {
@@ -76,7 +78,7 @@ public class ShareDialog extends Dialog implements View.OnClickListener, Adapter
         adapter = new DialogShareAdapter(data);
         mRootLayout.setAdapter(adapter);
 
-        mRootLayout.setNumColumns(columnWidth);
+        mRootLayout.setNumColumns(columnNum);
         mRootLayout.setSelector(android.R.color.transparent);
 
         mRootLayout.setOnItemClickListener(this);
@@ -101,7 +103,10 @@ public class ShareDialog extends Dialog implements View.OnClickListener, Adapter
         boolean isShowSharePoster = shareBean.isShowSharePoster;
         boolean isShowDownloadVideo = shareBean.isShowDownloadVideo;
         boolean isShowDownloadPic = shareBean.isShowDownloadPic;
-
+        boolean isShowMini = shareBean.isShowMini;
+        boolean isShowSetPermission = shareBean.isShowSetPermission;
+        boolean isShowDel = shareBean.isShowDel;
+        boolean isShowNoInterest = shareBean.isShowNoInterest;
 
         XShareItemBean itemBean = null;
 
@@ -111,6 +116,10 @@ public class ShareDialog extends Dialog implements View.OnClickListener, Adapter
 
         if (isShowPrivate) {
             itemBean = new XShareItemBean(R.mipmap.xshare_private, "私信好友", 0);
+            data.add(itemBean);
+        }
+        if (isShowMini) {
+            itemBean = new XShareItemBean(R.mipmap.xshare_mini, "小程序", 11);
             data.add(itemBean);
         }
         if (isShowWX) {
@@ -130,18 +139,6 @@ public class ShareDialog extends Dialog implements View.OnClickListener, Adapter
             itemBean = new XShareItemBean(R.mipmap.xshare_zone, "QQ空间", 4);
             data.add(itemBean);
         }
-        if (isShowToReport) {
-            itemBean = new XShareItemBean(R.mipmap.xshare_report, "举报", 5);
-            data.add(itemBean);
-        }
-        if (isShowBlackList) {
-            itemBean = new XShareItemBean(R.mipmap.xshare_black, "拉黑", 6);
-            data.add(itemBean);
-        }
-        if (isShowCopyLink) {
-            itemBean = new XShareItemBean(R.mipmap.xshare_connect, "复制链接", 7);
-            data.add(itemBean);
-        }
         if (isShowSharePoster) {
             itemBean = new XShareItemBean(R.mipmap.xshare_poster_black, "分享海报", 8);
             data.add(itemBean);
@@ -152,6 +149,30 @@ public class ShareDialog extends Dialog implements View.OnClickListener, Adapter
         }
         if (isShowDownloadPic) {
             itemBean = new XShareItemBean(R.mipmap.xshare_save_photo, "保存图片", 10);
+            data.add(itemBean);
+        }
+        if (isShowNoInterest) {
+            itemBean = new XShareItemBean(R.mipmap.xshare_no_inst, "不感兴趣", 14);
+            data.add(itemBean);
+        }
+        if (isShowCopyLink) {
+            itemBean = new XShareItemBean(R.mipmap.xshare_connect, "复制链接", 7);
+            data.add(itemBean);
+        }
+        if (isShowToReport) {
+            itemBean = new XShareItemBean(R.mipmap.xshare_report, "举报", 5);
+            data.add(itemBean);
+        }
+        if (isShowBlackList) {
+            itemBean = new XShareItemBean(R.mipmap.xshare_black, "拉黑", 6);
+            data.add(itemBean);
+        }
+        if (isShowSetPermission) {
+            itemBean = new XShareItemBean(R.mipmap.xshare_set_permission, "设置权限", 12);
+            data.add(itemBean);
+        }
+        if (isShowDel) {
+            itemBean = new XShareItemBean(R.mipmap.xshare_delete, "删除", 13);
             data.add(itemBean);
         }
 
@@ -191,6 +212,14 @@ public class ShareDialog extends Dialog implements View.OnClickListener, Adapter
     private void setListener(OnShareDialogClickListener listener) {
         this.listener = listener;
         XShareUtil.getInstance().registerListener(listener);
+    }
+
+    public void setColumnNum(int columnNum) {
+        if (columnNum <= 0) {
+            return;
+        }
+
+        this.columnNum = columnNum;
     }
 
     @Override
@@ -255,36 +284,55 @@ public class ShareDialog extends Dialog implements View.OnClickListener, Adapter
             case 1://微信
 
                 if (this.shareBean.shareWXInfo != null) {
-                    this.shareBean.shareWXInfo.isShowWXCircle = false;
-                    XShareUtil.getInstance().shareWX(activity, this.shareBean);
+
+                    if (this.shareBean.shareWXInfo.isDealInInner) {//内部处理微信分享
+                        this.shareBean.shareWXInfo.isShowWXCircle = false;
+                        XShareUtil.getInstance().shareWX(activity, this.shareBean);
+                    } else {
+                        if (this.listener != null) {
+                            this.listener.onDialogWXClick();
+                        }
+                    }
                 }
 
-                if (this.listener != null) {
-                    this.listener.onDialogWXClick();
-                }
                 break;
             case 2://朋友圈
 
                 if (this.shareBean.shareWXInfo != null) {
-                    this.shareBean.shareWXInfo.isShowWXCircle = true;
-                    XShareUtil.getInstance().shareWX(activity, this.shareBean);
+                    if (this.shareBean.shareWXInfo.isDealInInner) {//内部处理微信分享
+                        this.shareBean.shareWXInfo.isShowWXCircle = true;
+                        XShareUtil.getInstance().shareWX(activity, this.shareBean);
+                    } else {
+                        if (this.listener != null) {
+                            this.listener.onDialogWXCircleClick();
+                        }
+                    }
                 }
 
-                if (this.listener != null) {
-                    this.listener.onDialogWXCircleClick();
-                }
                 break;
             case 3://QQ
 
-                if (this.shareBean.shareWXInfo != null) {
-                    this.shareBean.shareQQInfo.isQQZone = false;
-                    XShareUtil.getInstance().shareQQ(activity, this.shareBean);
+                if (this.shareBean.shareQQInfo != null) {
+                    if (this.shareBean.shareQQInfo.isDealInInner) {
+                        this.shareBean.shareQQInfo.isQQZone = false;
+                        XShareUtil.getInstance().shareQQ(activity, this.shareBean);
+                    } else {
+                        if (this.listener != null) {
+                            this.listener.onDialogQQClick(STATE_NO_ACTION);
+                        }
+                    }
                 }
                 break;
             case 4://QQZone
-                if (this.shareBean.shareWXInfo != null) {
-                    this.shareBean.shareQQInfo.isQQZone = true;
-                    XShareUtil.getInstance().shareQQ(activity, this.shareBean);
+                if (this.shareBean.shareQQInfo != null) {
+                    if (this.shareBean.shareQQInfo.isDealInInner) {
+                        this.shareBean.shareQQInfo.isQQZone = true;
+                        XShareUtil.getInstance().shareQQ(activity, this.shareBean);
+                    } else {
+                        if (this.listener != null) {
+                            this.listener.onDialogQQZoneClick(STATE_NO_ACTION);
+                        }
+                    }
                 }
                 break;
             case 5://举报
@@ -309,19 +357,45 @@ public class ShareDialog extends Dialog implements View.OnClickListener, Adapter
                 break;
             case 9://分享下载视频
                 if (this.shareBean.shareDownloadVideoInfo != null) {
-                    XShareUtil.getInstance().downloadVideo(activity, this.shareBean);
-                }
-
-                if (this.listener != null) {
-                    this.listener.onDialogDownloadVideoClick();
+                    if (this.shareBean.shareDownloadVideoInfo.isDealInInner) {
+                        XShareUtil.getInstance().downloadVideo(activity, this.shareBean);
+                    } else {
+                        if (this.listener != null) {
+                            this.listener.onDialogDownloadVideoClick();
+                        }
+                    }
                 }
                 break;
             case 10://分享下载图片
                 if (this.shareBean.shareDownloadPicInfo != null) {
-                    XShareUtil.getInstance().downloadPic(activity, this.shareBean);
+                    if (this.shareBean.shareDownloadVideoInfo.isDealInInner) {
+                        XShareUtil.getInstance().downloadPic(activity, this.shareBean);
+                    } else {
+                        if (this.listener != null) {
+                            this.listener.onDialogDownloadPicClick();
+                        }
+                    }
                 }
-                if (this.listener != null) {
-                    this.listener.onDialogDownloadPicClick();
+                break;
+            case 11://小程序
+
+                if (this.shareBean.shareMiniInfo != null) {
+                    XShareUtil.getInstance().mini(activity, this.shareBean);
+                }
+                break;
+            case 12://设置权限
+                if (this.shareBean.shareSetPermissionInfo != null) {
+                    XShareUtil.getInstance().setPermission(activity, this.shareBean);
+                }
+                break;
+            case 13://删除
+                if (this.shareBean.shareDelInfo != null) {
+                    XShareUtil.getInstance().del(activity, this.shareBean);
+                }
+                break;
+            case 14://不感兴趣
+                if (this.shareBean.shareNoInterestInfo != null) {
+                    XShareUtil.getInstance().noInterest(activity, this.shareBean);
                 }
                 break;
         }
@@ -339,6 +413,7 @@ public class ShareDialog extends Dialog implements View.OnClickListener, Adapter
         private boolean isCancelOnTouchOutside = false;
         private XShareBean shareBean = null;
         private OnShareDialogClickListener listener;
+        private int columnNum;
 
 
         public Builder(Context mContext) {
@@ -378,6 +453,12 @@ public class ShareDialog extends Dialog implements View.OnClickListener, Adapter
         }
 
 
+        public Builder setColumnNum(int columnNum) {
+            this.columnNum = columnNum;
+            return this;
+        }
+
+
         public ShareDialog build() {
             if (shareDialog == null) {
                 shareDialog = new ShareDialog(mContext, layoutId, gravity, isCancelOnTouchOutside, listener);
@@ -386,6 +467,7 @@ public class ShareDialog extends Dialog implements View.OnClickListener, Adapter
             shareDialog.setData(shareBean);
             shareDialog.setListener(listener);
             shareDialog.setIsCanceledOnTouchOutside(isCancelOnTouchOutside);
+            shareDialog.setColumnNum(columnNum);
             shareDialog.create();
             return shareDialog;
         }

@@ -5,6 +5,7 @@ public interface OnShareDialogClickListener {
     public static final int STATE_SUCCESS = 0;
     public static final int STATE_FAIL = 1;
     public static final int STATE_CANCEL = 2;
+    public static final int STATE_NO_ACTION = 3;// XShare内部不处理点击事件
 
     /**
      * 微信 : 具体的逻辑已经实现，其实这里不需要做任何实现
@@ -65,4 +66,26 @@ public interface OnShareDialogClickListener {
      * 下载图片
      */
     void onDialogDownloadPicClick();
+
+    /**
+     * 小程序
+     *
+     * @param session 0:微信会话 1：朋友圈 -1:XShare内部不处理具体事务
+     */
+    void onDialogMiniClick(int session);
+
+    /**
+     * 删除
+     */
+    void onDialogDelClick();
+
+    /**
+     * 设置权限
+     */
+    void onDialogSetPermissionClick();
+
+    /**
+     * 不感兴趣
+     */
+    void onDialogNoInterestClick();
 }

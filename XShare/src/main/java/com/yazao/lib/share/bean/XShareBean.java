@@ -33,6 +33,17 @@ public class XShareBean {
     public boolean isShowDownloadPic = false;
 
 
+    //是否显示小程序
+    public boolean isShowMini = false;
+    //是否显示显示设置权限
+    public boolean isShowSetPermission = false;
+    //是否显示删除
+    public boolean isShowDel = false;
+    //是否显示不感兴趣
+    public boolean isShowNoInterest = false;
+
+
+
     //共有配置信息
     public ShareInfo shareInfo = new ShareInfo();
 
@@ -54,6 +65,14 @@ public class XShareBean {
     public ShareDownloadVideoInfo shareDownloadVideoInfo = new ShareDownloadVideoInfo();
     //下载图片 配置信息
     public ShareDownloadPicInfo shareDownloadPicInfo = new ShareDownloadPicInfo();
+    //小程序 配置信息
+    public ShareMiniInfo shareMiniInfo = new ShareMiniInfo();
+    //设置权限 配置信息
+    public ShareSetPermissionInfo shareSetPermissionInfo = new ShareSetPermissionInfo();
+    //删除 配置信息
+    public ShareDelInfo shareDelInfo = new ShareDelInfo();
+    //不感兴趣 配置信息
+    public ShareNoInterestInfo shareNoInterestInfo = new ShareNoInterestInfo();
 
     //共有数据
     public static class ShareInfo {
@@ -72,16 +91,14 @@ public class XShareBean {
         public boolean isPicShare = false;
         /** Web分享 */
         public boolean isWebShare = false;
-
-        /** 被分享者的 id . 如果 {@link #isVideoShare} is true,那么当前字段{@link #sharedId} 需要传值 */
-        public String sharedId = "";
-        /** 分享码 . 如果 {@link #isVideoShare} is true,那么当前字段{@link #reCode} 需要传值 */
-        public String reCode = "";
     }
 
 
     //微信配置信息
     public static class ShareWXInfo {
+
+        /** XShare内部处理微信相关分析, 默认内部处理 */
+        public boolean isDealInInner = true;
 
         /** 内部调用 微信好友/朋友圈  true:朋友圈, false: 微信好友. 这个字段在外界不可调用，即使调用了也不起作用 */
         public boolean isShowWXCircle = false;
@@ -89,16 +106,27 @@ public class XShareBean {
         /** 分享方式是 true:小程序, false: web */
         public boolean isShowWXMini = false;
 
+        /**
+         * 分享视频小程序路径。分享到微信好友会话中时候，分享的是 视频小程序 。 前提是 {@link #isShowWXMini } is true ，并且 {@link ShareInfo#isVideoShare} is true
+         */
+        public String miniPath4Video = "";
 
-        /** 分享到微信之前是否需要获取数据，如果当前 {@link #beforeRequest } is true,需要用到字段 {@link #paramsMap} 来传递参数 */
-        public boolean beforeRequest = false;
-        /** 分享到微信之前需要获取数据的请求参数列表.  如果{@link #beforeRequest } is false,那么当前{@link #paramsMap} 字段可以不传值*/
-        public Map paramsMap;
+        /**
+         * 分享图片小程序的路径。分享到微信好友会话中时候，分享的是 图片小程序。 前提是 {@link #isShowWXMini } is true ，并且 {@link ShareInfo#isPicShare} is true
+         */
+        public String miniPath4Pic = "";
+        /**
+         * 分享web小程序的路径。分享到微信好友会话中时候，分享的是 web小程序。 前提是 {@link #isShowWXMini } is true ，并且 {@link ShareInfo#isWebShare} is true
+         */
+        public String miniPath4Web = "";
 
     }
 
     //QQ配置信息
     public static class ShareQQInfo{
+        /** XShare内部处理QQ相关分析, 默认内部处理 */
+        public boolean isDealInInner = true;
+
         /** QQ/QQ空间  true:QQ空间, false: QQ. 这个字段在外界不可调用，即使调用了也不起作用 */
         public boolean isQQZone = false;
     }
@@ -106,10 +134,6 @@ public class XShareBean {
     //举报配置信息
     public static class ShareToReport {
         public int REQUEST_CODE_REPORT = 10001;
-        /** 被举报者mid */
-        public String reportedMid = "";
-        /** 举报者mid */
-        public String currentMid = "";
     }
 
     //复制链接配置信息
@@ -120,20 +144,10 @@ public class XShareBean {
 
     //拉黑配置信息
     public static class ShareBlackListInfo {
-        /** 拉黑者mid */
-        public String currentMid = "";
-        /** 被拉黑者mid */
-        public String blockedMid = "";
     }
 
     //海报配置信息
     public static class SharePosterInfo {
-        /** 分享前，是否请求必要的数据 */
-        public boolean beforeRequest = true;
-        /** {@link #beforeRequest} is true, 请求参数配置到{@link #paramsMap} */
-        public Map paramsMap;
-        /** 是否需要内部处理海报分享操作 */
-        public boolean hasDeal = true;
     }
 
     //私信好友配置信息
@@ -143,13 +157,35 @@ public class XShareBean {
 
     //下载视频配置信息
     public static class ShareDownloadVideoInfo {
+        /** XShare内部处理视频下载, 默认内部处理 */
+        public boolean isDealInInner = true;
         /** 视频下载地址 */
         public String videoPath;
     }
 
     //下载图片配置信息
     public static class ShareDownloadPicInfo {
+        /** XShare内部处理图片下载, 默认内部处理 */
+        public boolean isDealInInner = true;
         /** 图片下载地址 */
         public String picPath;
+    }
+
+    //小程序配置信息
+    public static class ShareMiniInfo {
+        /** 小程序路径 */
+        public String miniPath;
+    }
+    //设置权限配置信息
+    public static class ShareSetPermissionInfo {
+
+    }
+    //删除配置信息
+    public static class ShareDelInfo {
+
+    }
+    //不感兴趣配置信息
+    public static class ShareNoInterestInfo {
+
     }
 }

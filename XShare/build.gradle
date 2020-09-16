@@ -60,5 +60,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     //xtoast
-    implementation 'com.yazao:XToast:1.0.0'
+    implementation 'com.yazao:xtoast:1.0.2'
+    // xdialog
+    implementation('com.yazao:xdialog:1.0.1')
 }

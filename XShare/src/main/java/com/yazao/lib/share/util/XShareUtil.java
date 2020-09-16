@@ -19,11 +19,13 @@ import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.tauth.UiError;
 import com.yazao.lib.share.R;
 import com.yazao.lib.share.bean.XShareBean;
+import com.yazao.lib.share.config.XShareConfig;
 import com.yazao.lib.share.listener.OnShareDialogClickListener;
 import com.yazao.lib.share.permission.PermissionConfig;
 import com.yazao.lib.share.permission.PermissionUtils;
 import com.yazao.lib.share.util.download.AndroidDownloadManager;
 import com.yazao.lib.share.util.download.AndroidDownloadManagerListener;
+import com.yazao.lib.share.widget.ShareDialog;
 import com.yazao.lib.toast.XToast;
 
 import java.io.File;
@@ -52,10 +54,6 @@ public class XShareUtil {
      * @param shareToReportInfo
      */
     public void report(Activity activity, XShareBean.ShareToReport shareToReportInfo) {
-//        if (shareToReportInfo == null || TextUtils.isEmpty(shareToReportInfo.creatorMid) || TextUtils.isEmpty(shareToReportInfo.reportedMid)) {
-//            return;
-//        }
-        XToast.showLong("举报成功，我们将尽快处理");
         if (this.listener != null) {
             this.listener.onDialogReportClick();
         }
@@ -74,10 +72,10 @@ public class XShareUtil {
             return;
         }
 
-        doWxShare(shareBean);
+        doWxShare(mContext, shareBean);
     }
 
-    private void doWxShare(XShareBean shareBean) {
+    private void doWxShare(Activity mContext, XShareBean shareBean) {
         if (shareBean == null) {
             return;
         }
@@ -91,11 +89,12 @@ public class XShareUtil {
 
 
         boolean isVideoShare = shareInfo.isVideoShare;
-        String sharedId = shareInfo.sharedId;
-        String reCode = shareInfo.reCode;
-
         boolean isPicShare = shareInfo.isPicShare;
         boolean isWebShare = shareInfo.isWebShare;
+
+        String miniPath4Video = shareWXInfo.miniPath4Video;
+        String miniPath4Pic = shareWXInfo.miniPath4Pic;
+        String miniPath4Web = shareWXInfo.miniPath4Web;
 
         String uid = "";
 
@@ -125,18 +124,19 @@ public class XShareUtil {
                     WxUtils.shareToWxMiniProgram(coverImg,
                             title,
                             desc,
-                            "page/find/pages/video/video/video?id=" +
-                                    sharedId +
-                                    "&reCode=" + reCode);
-                } else {
+                            miniPath4Video);
+                } else if (isPicShare) {
                     //小程序 - 图片
                     WxUtils.shareToWxMiniProgram(coverImg,
                             title,
                             desc,
-                            "page/find/pages/ReleaseDetails/ReleaseDetails?id="
-                                    + sharedId +
-                                    "&reCode=" + reCode +
-                                    "&uid=" + uid);
+                            miniPath4Pic);
+                } else if (isWebShare) {
+                    //小程序 - web
+                    WxUtils.shareToWxMiniProgram(coverImg,
+                            title,
+                            desc,
+                            miniPath4Web);
                 }
 
             } else {
@@ -144,14 +144,14 @@ public class XShareUtil {
 
                 if (isPicShare) {
                     //图片分享
-                    WxUtils.shareImageToWx(coverImg, SendMessageToWX.Req.WXSceneTimeline);
+                    WxUtils.shareImageToWx(coverImg, SendMessageToWX.Req.WXSceneSession);
                 } else if (isVideoShare) {
                     // 视频分享
 
                 } else if (isWebShare) {
                     // web 分享
                     WxUtils.shareWebToWx(url, title, desc, coverImg,
-                            SendMessageToWX.Req.WXSceneTimeline);
+                            SendMessageToWX.Req.WXSceneSession);
                 }
 
             }
@@ -173,9 +173,9 @@ public class XShareUtil {
         String url = shareCopyLinkInfo.copyLink;
 
         ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData mClipData = ClipData.newPlainText("XShare", url);
+        ClipData mClipData = ClipData.newPlainText(XShareConfig.APP_NAME, url);
         cm.setPrimaryClip(mClipData);
-        XToast.show("复制成功");
+
         if (this.listener != null) {
             this.listener.onDialogCopyLinkClick();
         }
@@ -194,14 +194,6 @@ public class XShareUtil {
             return;
         }
 
-        String mid = shareBlackListInfo.currentMid;
-        String blockMid = shareBlackListInfo.blockedMid;
-
-        Map<String, String> map = new HashMap<>();
-        map.put("mid", mid);
-        map.put("block_mid", blockMid);
-
-        XToast.showLong("拉黑成功");
         if (this.listener != null) {
             this.listener.onDialogBlackListClick();
         }
@@ -225,7 +217,6 @@ public class XShareUtil {
 
             @Override
             public void onComplete(Object o) {
-                XToast.showLong("分享成功");
                 if (listener != null) {
                     if (shareBean.shareQQInfo.isQQZone) {
                         listener.onDialogQQZoneClick(OnShareDialogClickListener.STATE_SUCCESS);
@@ -237,7 +228,7 @@ public class XShareUtil {
 
             @Override
             public void onError(UiError uiError) {
-                XToast.showLong("分享失败[" + uiError.errorCode + " " + uiError.errorMessage + "]");
+
                 if (listener != null) {
                     if (shareBean.shareQQInfo.isQQZone) {
                         listener.onDialogQQZoneClick(OnShareDialogClickListener.STATE_FAIL);
@@ -249,7 +240,6 @@ public class XShareUtil {
 
             @Override
             public void onCancel() {
-                XToast.showLong("分享取消");
                 if (listener != null) {
                     if (shareBean.shareQQInfo.isQQZone) {
                         listener.onDialogQQZoneClick(OnShareDialogClickListener.STATE_CANCEL);
@@ -412,7 +402,7 @@ public class XShareUtil {
         String[] permission = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
         boolean checkResult = PermissionUtils.checkPermissionsGroup(activity, permission);
         if (!checkResult) {
-            Toast.makeText(activity, "未授予存储文件权限", Toast.LENGTH_SHORT).show();
+            XToast.show(R.string.xshare_permission_no_write);
             PermissionConfig.showPermissionDialog(activity, PermissionConfig.MESSAGE_WRITE_EXTERNAL_PERMISSION);
         } else {
             String sharePosterUrl = shareBean.shareDownloadPicInfo.picPath;
@@ -421,6 +411,39 @@ public class XShareUtil {
 
 
     }
+
+    //******************************** 小程序 ********************************
+
+    public void mini(Context context, XShareBean shareBean) {
+
+        if (listener != null) {
+            listener.onDialogMiniClick(-1);
+        }
+    }
+
+    //******************************** 删除 ********************************
+    public void del(Activity activity, XShareBean shareBean) {
+
+        if (listener != null) {
+            listener.onDialogDelClick();
+        }
+    }
+
+    //******************************** 设置权限 ********************************
+    public void setPermission(Activity activity, XShareBean shareBean) {
+        if (listener != null) {
+            listener.onDialogSetPermissionClick();
+        }
+    }
+
+    //******************************** 不感兴趣 ********************************
+    public void noInterest(Activity activity, XShareBean shareBean) {
+
+        if (listener != null) {
+            listener.onDialogNoInterestClick();
+        }
+    }
+
 
     //******************************** 单例模式 ********************************
     private static class SingleHolder {
