@@ -24,12 +24,43 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-}
 
+    lintOptions {
+        abortOnError false
+    }
+
+    packagingOptions {
+        exclude 'assets/com.tencent.open.config.json'
+        exclude 'assets/h5_qr_back.png'
+        exclude 'assets/libwbsafeedit'
+        exclude 'assets/libwbsafeedit_64'
+        exclude 'assets/libwbsafeedit_x86'
+        exclude 'assets/libwbsafeedit_x86_64'
+    }
+}
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], dir: 'libs',excludes: ['open_sdk_r8353806_lite.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation project(':XShare')
-    implementation files('libs/open_sdk_r8353806_lite.jar')
+
+    implementation('com.yazao:xtoast:1.0.2')
+
+//    implementation project(':XShare')
+    implementation('com.yazao:xshare:1.1.0') {
+//        exclude module: 'jetified-xshare-1.0.0-runtime'
+//        exclude module: 'jetified-open_sdk_r8353806_lite'
+//        exclude module: 'open_sdk_r8353806_lite'
+//        exclude module: 'xshare-1.0.0-runtime'
+
+//        exclude 'open_sdk_r8353806_lite'
+//        exclude( module('xshare'), group('com.yazao'))
+
+
+//        exclude group: 'com.yazao', module: 'xToast'
+//        exclude module: 'jetified-XToast-1.0.0-runtime'
+//        exclude module: 'jetified-xtoast-1.0.2-runtime'
+//        exclude group: 'com.yazao', module: 'xToast'
+//        exclude module: 'xToast'
+    }
 }
+
